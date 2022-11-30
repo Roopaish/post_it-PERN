@@ -35,6 +35,7 @@
     "@mikro-orm/migrations": "^5.5.3",
     "@mikro-orm/postgresql": "^5.5.3",
     "apollo-server-express": "^3.11.1", // helps creating graphql endpoints easily
+    "argon2": "^0.30.2", // hashing password
     "dotenv-safe": "^8.2.0",
     "express": "^4.18.2", // our server with great middleware
     "graphql": "^16.6.0",
