@@ -32,3 +32,17 @@
   }
 }
 ```
+
+## How session-cookie authentication works?
+
+- `req.session.userId = user.id`  
+   this sets session data,  
+   then anything stuck in session is saved in redis database  
+   eg: {userId: 1} is saved with a generated key like  
+  `someKey -> {userId: 1}`
+- express-session will then set a cookie in the browser with the session id  
+  eg: `someCookieValue`, it is a signed/encrypted version of the `someKey` generated with a `secretKey`
+- when the user makes a request, the cookie is sent to the server
+  `someCookieValue >>> server`
+- server unsigns/decrypts `someCookieValue` using `secretKey` to get `someKey`
+- then we look for value of `someKey` in redis database getting `{userId: 1}` which is stored as session data on the server
