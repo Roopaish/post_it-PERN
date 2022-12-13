@@ -6,6 +6,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import { User } from "../entities/User";
@@ -40,10 +41,20 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: MyContext) {
+    console.log(req.session);
+    if (!req.session.userId) {
+      return null;
+    }
+    const user = await em.findOne(User, { id: req.session.userId } as User);
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("input") input: AuthInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { req, em }: MyContext
   ): Promise<UserResponse> {
     if (input.username.length < 3) {
       return {
@@ -80,13 +91,15 @@ export class UserResolver {
     } as User);
     await em.persistAndFlush(user);
 
+    req.session.userId = user.id;
+
     return { user };
   }
 
   @Mutation(() => UserResponse)
   async login(
     @Arg("input") input: AuthInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, { username: input.username });
     if (!user) {
@@ -101,6 +114,9 @@ export class UserResolver {
         errors: [{ name: "password", message: "Incorrect password" }],
       };
     }
+
+    // save user id session on redis
+    req.session.userId = user.id;
 
     return { user };
   }

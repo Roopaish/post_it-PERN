@@ -9,26 +9,6 @@
 
 ```json
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "watch": "tsc -w",
-    "dev": "nodemon dist/index.js",
-    "start": "node dist/index.js",
-    "start:ts": "ts-node src/index.ts",
-    "dev:ts": "nodemon --exec ts-node src/index.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^18.11.9",
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
-  },
   "dependencies": {
     "@mikro-orm/cli": "^5.5.3",
     "@mikro-orm/core": "^5.5.3",
@@ -40,7 +20,10 @@
     "express": "^4.18.2", // our server with great middleware
     "graphql": "^16.6.0",
     "pg": "^8.8.0",
-    "type-graphql": "^1.1.1"
+    "type-graphql": "^1.1.1",
+    "connect-redis": "^6.1.3",
+    "redis": "^4.5.1", // using redis database for faster read and write of session data
+    "express-session": "^1.17.3"
   },
   /* config for mikro-orm */
   "mikro-orm": {
