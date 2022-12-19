@@ -24,7 +24,7 @@ class AuthInput {
 @ObjectType()
 class FieldError {
   @Field()
-  name: string;
+  field: string;
 
   @Field()
   message: string;
@@ -60,7 +60,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            name: "username",
+            field: "username",
             message: "Username must be greater or equal to 3 characters",
           },
         ],
@@ -70,7 +70,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            name: "password",
+            field: "password",
             message: "Password must be greater or equal 6 characters",
           },
         ],
@@ -80,7 +80,7 @@ export class UserResolver {
     const _user = await em.findOne(User, { username: input.username });
     if (_user) {
       return {
-        errors: [{ name: "username", message: "Username already exists" }],
+        errors: [{ field: "username", message: "Username already exists" }],
       };
     }
 
@@ -104,14 +104,14 @@ export class UserResolver {
     const user = await em.findOne(User, { username: input.username });
     if (!user) {
       return {
-        errors: [{ name: "username", message: "Username not found" }],
+        errors: [{ field: "username", message: "Username not found" }],
       };
     }
 
     const valid = await argon2.verify(user.password, input.password);
     if (!valid) {
       return {
-        errors: [{ name: "password", message: "Incorrect password" }],
+        errors: [{ field: "password", message: "Incorrect password" }],
       };
     }
 

@@ -45,4 +45,4 @@
 - when the user makes a request, the cookie is sent to the server
   `someCookieValue >>> server`
 - server unsigns/decrypts `someCookieValue` using `secretKey` to get `someKey`
-- then we look for value of `someKey` in redis database getting `{userId: 1}` which is stored as session data on the server
+- then we look for value of `someKey` in redis database getting `{userId: 1}` which is stored as session data on the server i.e. `req.session`

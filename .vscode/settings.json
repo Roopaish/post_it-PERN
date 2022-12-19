@@ -2,5 +2,5 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "cSpell.words": ["Mikro"]
+  "cSpell.words": ["Mikro", "urql"]
 }

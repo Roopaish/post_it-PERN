@@ -1,6 +1,7 @@
 import { MikroORM } from "@mikro-orm/core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
+import cors from "cors";
 import "dotenv-safe/config";
 import express from "express";
 import session from "express-session";
@@ -34,7 +35,16 @@ const main = async () => {
 
   await redisClient.connect();
 
-  app.set("trust proxy", !__prod__);
+  // apply cors throughout the app
+  app.use(
+    cors({
+      credentials: true,
+      origin: ["https://studio.apollographql.com", "http://localhost:3000"],
+    })
+  );
+
+  app.set("trust proxy", 1);
+
   app.use(
     session({
       name: "qid",
@@ -45,8 +55,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // can't be accessed by client side js
-        sameSite: __prod__ ? "lax" : "none", // csrf
-        secure: true, // cookie only works in https if true
+        sameSite: "lax", // csrf
+        secure: __prod__, // cookie only works in https if true, true for https and false for http
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET as string,
@@ -66,7 +76,11 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: { credentials: true, origin: "https://studio.apollographql.com" },
+    cors: false,
+    // cors: {
+    //   credentials: true,
+    //   origin: ["https://studio.apollographql.com", "http://localhost:3000"],
+    // }, // cors for this endpoint only
   }); // creates graphql endpoint on express
 
   app.listen(process.env.PORT || 4000, () => {
