@@ -7,7 +7,7 @@ import express from "express";
 import session from "express-session";
 import * as redis from "redis";
 import { buildSchema } from "type-graphql";
-import { __prod__ } from "./constants";
+import { COOKIE_NAME, __prod__ } from "./constants";
 import mikroOrmConfig from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
@@ -47,7 +47,7 @@ const main = async () => {
 
   app.use(
     session({
-      name: "qid",
+      name: COOKIE_NAME,
       store: new RedisStore({
         client: redisClient,
         disableTouch: true, // Disables re-saving and resetting the TTL when using touch

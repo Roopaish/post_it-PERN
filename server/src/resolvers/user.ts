@@ -9,6 +9,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
+import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
 
@@ -119,5 +120,20 @@ export class UserResolver {
     req.session.userId = user.id;
 
     return { user };
+  }
+
+  @Mutation(() => Boolean)
+  async logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+    return new Promise((_res) =>
+      // removing from redis
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME); // removes from client
+        if (err) {
+          _res(false);
+          return;
+        }
+        _res(true);
+      })
+    );
   }
 }
