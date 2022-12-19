@@ -13,7 +13,8 @@
     "next": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "urql": "^3.0.3" // graphql client
+    "urql": "^3.0.3", // graphql client
+    "@urql/exchange-graphcache": "^5.0.8" // easy working with cache with urql
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.16.1", // to generate graphql types from the source endpoint
@@ -53,3 +54,5 @@ const Home = () => {
   ...
 };
 ```
+
+> Note: GraphQL Clients have built-in-caching mechanism which reduces the need of state management libraries like Redux, MobX, etc and reduces number of api calls.
