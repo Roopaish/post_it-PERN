@@ -7,7 +7,7 @@ import {
   Mutation,
   ObjectType,
   Query,
-  Resolver,
+  Resolver
 } from "type-graphql";
 import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
@@ -44,7 +44,6 @@ class UserResponse {
 export class UserResolver {
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext) {
-    console.log(req.session);
     if (!req.session.userId) {
       return null;
     }

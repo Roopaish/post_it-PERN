@@ -6,6 +6,7 @@ import { createClient, dedupExchange, fetchExchange, Provider } from "urql";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import {
   LoginMutation,
+  LogoutMutation,
   MeDocument,
   MeQuery,
   RegisterMutation,
@@ -35,17 +36,13 @@ const client = createClient({
           login: (_result: LoginMutation, args, cache, info) => {
             betterUpdateQuery<LoginMutation, MeQuery>(
               cache,
-              {
-                query: MeDocument,
-              },
+              { query: MeDocument },
               _result,
               (result, query) => {
                 if (result.login.errors) {
                   return query;
                 } else {
-                  return {
-                    me: result.login.user,
-                  };
+                  return { me: result.login.user };
                 }
               }
             );
@@ -53,19 +50,23 @@ const client = createClient({
           register: (_result: RegisterMutation, args, cache, info) => {
             betterUpdateQuery<RegisterMutation, MeQuery>(
               cache,
-              {
-                query: MeDocument,
-              },
+              { query: MeDocument },
               _result,
               (result, query) => {
                 if (result.register.errors) {
                   return query;
                 } else {
-                  return {
-                    me: result.register.user,
-                  };
+                  return { me: result.register.user };
                 }
               }
+            );
+          },
+          logout: (_result: LogoutMutation, args, cache, info) => {
+            betterUpdateQuery<LogoutMutation, MeQuery>(
+              cache,
+              { query: MeDocument },
+              _result,
+              () => ({ me: null })
             );
           },
         },
