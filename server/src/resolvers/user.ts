@@ -3,24 +3,17 @@ import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
-  Resolver
+  Resolver,
 } from "type-graphql";
 import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
-
-@InputType()
-class AuthInput {
-  @Field()
-  username: string;
-
-  @Field()
-  password: string;
-}
+import { sendEmail } from "../utils/sendEmail";
+import { validateRegister } from "../utils/validateRegister";
+import { AuthInput } from "./AuthInput";
 
 @ObjectType()
 class FieldError {
@@ -42,6 +35,22 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => Boolean)
+  async forgotPassword(@Arg("email") email: string, @Ctx() { em }: MyContext) {
+    const user = await em.findOne(User, { email });
+    if (!user) {
+      return true;
+    }
+
+    const token = "token";
+
+    sendEmail(
+      email,
+      `<a href='http://localhost:3000/change-password/${token}'>Reset Your Password</a>`
+    );
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext) {
     if (!req.session.userId) {
@@ -56,36 +65,26 @@ export class UserResolver {
     @Arg("input") input: AuthInput,
     @Ctx() { req, em }: MyContext
   ): Promise<UserResponse> {
-    if (input.username.length < 3) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Username must be greater or equal to 3 characters",
-          },
-        ],
-      };
-    }
-    if (input.password.length < 6) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "Password must be greater or equal 6 characters",
-          },
-        ],
-      };
+    const errors = validateRegister(input);
+
+    if (errors) {
+      return { errors: errors };
     }
 
-    const _user = await em.findOne(User, { username: input.username });
+    const _user = await em.findOne(User, {
+      $or: [{ email: input.email }, { username: input.username }],
+    });
     if (_user) {
       return {
-        errors: [{ field: "username", message: "Username already exists" }],
+        errors: [
+          { field: "username", message: "Username/Email already exists" },
+        ],
       };
     }
 
     const hashedPassword = await argon2.hash(input.password);
     const user = em.create(User, {
+      email: input.email,
       username: input.username,
       password: hashedPassword,
     } as User);
@@ -98,17 +97,32 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("input") input: AuthInput,
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: input.username });
+    const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+      usernameOrEmail
+    );
+
+    const user = await em.findOne(
+      User,
+      isEmail
+        ? {
+            email: usernameOrEmail,
+          }
+        : { username: usernameOrEmail }
+    );
+
+    console.log(user);
+
     if (!user) {
       return {
-        errors: [{ field: "username", message: "Username not found" }],
+        errors: [{ field: "usernameOrEmail", message: "User not found" }],
       };
     }
 
-    const valid = await argon2.verify(user.password, input.password);
+    const valid = await argon2.verify(user.password, password);
     if (!valid) {
       return {
         errors: [{ field: "password", message: "Incorrect password" }],

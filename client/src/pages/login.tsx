@@ -1,11 +1,13 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
+import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation } from "urql";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { LoginDocument } from "../gql/graphql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface LoginPageProps {}
@@ -17,11 +19,11 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
     <Wrapper variant="small">
       <Formik
         initialValues={{
-          username: "",
+          usernameOrEmail: "",
           password: "",
         }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ input: values });
+          const response = await login(values);
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -33,9 +35,9 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
           return (
             <Form>
               <InputField
-                name="username"
-                placeholder="username"
-                label="Username"
+                name="usernameOrEmail"
+                placeholder="username or email"
+                label="Username/Email"
               />
               <Box mt="8px">
                 <InputField
@@ -61,4 +63,4 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
   );
 };
 
-export default LoginPage;
+export default withUrqlClient(createUrqlClient)(LoginPage);

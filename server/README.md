@@ -9,6 +9,14 @@
 
 ```json
 {
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js",
+    "start": "node dist/index.js",
+    "start:ts": "ts-node src/index.ts",
+    "dev:ts": "nodemon --exec ts-node src/index.ts",
+    "create:migration": "mikro-orm migration:create" // create new migrations when schema changes
+  },
   "dependencies": {
     "@mikro-orm/cli": "^5.5.3",
     "@mikro-orm/core": "^5.5.3",
@@ -19,11 +27,13 @@
     "dotenv-safe": "^8.2.0",
     "express": "^4.18.2", // our server with great middleware
     "graphql": "^16.6.0",
-    "pg": "^8.8.0",
+    "pg": "^8.8.0", // postgres client
     "type-graphql": "^1.1.1",
     "connect-redis": "^6.1.3",
     "redis": "^4.5.1", // using redis database for faster read and write of session data
-    "express-session": "^1.17.3"
+    "express-session": "^1.17.3",
+    "ioredis": "^5.2.4", // replacing redis package with ioredis because its better
+    "uuid": "^9.0.0" // generating unique ids
   },
   /* config for mikro-orm */
   "mikro-orm": {
