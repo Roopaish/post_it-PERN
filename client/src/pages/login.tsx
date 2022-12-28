@@ -1,6 +1,7 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation } from "urql";
@@ -46,6 +47,9 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
                   label="Password"
                   type="password"
                 />
+              </Box>
+              <Box mt="8px">
+                <NextLink href="/forgot-password">Forgot Password?</NextLink>
               </Box>
               <Button
                 mt="8px"

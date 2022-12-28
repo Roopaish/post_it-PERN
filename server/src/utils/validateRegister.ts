@@ -25,7 +25,7 @@ export const validateRegister = (input: AuthInput) => {
     return [
       {
         field: "password",
-        message: "Password must be greater or equal 6 characters",
+        message: "Password must be greater or equal to 6 characters",
       },
     ];
   }

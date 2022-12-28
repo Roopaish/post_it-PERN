@@ -13,7 +13,7 @@ export class User {
   createdAt = new Date();
 
   @Field(() => String)
-  @Property({ type: "timestamp" })
+  @Property({ type: "timestamp", onUpdate: () => new Date() })
   updatedAt = new Date();
 
   @Field()
