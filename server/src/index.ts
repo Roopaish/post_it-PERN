@@ -5,7 +5,7 @@ import cors from "cors";
 import "dotenv-safe/config";
 import express from "express";
 import session from "express-session";
-import ioredis from "ioredis";
+import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import mikroOrmConfig from "./mikro-orm.config";
@@ -24,7 +24,7 @@ const main = async () => {
   /* Using redis to store session data */
   const RedisStore = connectRedis(session);
 
-  const redisClient = new ioredis({
+  const redis = new Redis({
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT as string),
     password: process.env.REDIS_PASSWORD,
@@ -44,7 +44,7 @@ const main = async () => {
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTouch: true, // Disables re-saving and resetting the TTL when using touch
       }),
       cookie: {
@@ -65,7 +65,7 @@ const main = async () => {
       validate: false,
     }),
     // to make variables available to all the resolvers, can pass anything
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
   });
   await apolloServer.start();
 

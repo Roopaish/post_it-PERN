@@ -40,7 +40,6 @@
     "ioredis": "^5.2.4",
     "nodemailer": "^6.8.0",
     "pg": "^8.8.0",
-    "redis": "^4.5.1",
     "type-graphql": "^1.1.1",
     "uuid": "^9.0.0"
   },
