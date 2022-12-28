@@ -5,7 +5,7 @@ import cors from "cors";
 import "dotenv-safe/config";
 import express from "express";
 import session from "express-session";
-import * as redis from "redis";
+import ioredis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import mikroOrmConfig from "./mikro-orm.config";
@@ -16,7 +16,7 @@ import { MyContext } from "./types";
 
 const main = async () => {
   const orm = await MikroORM.init(mikroOrmConfig);
-
+  // await orm.em.nativeDelete(User, {}); // delete all users
   await orm.getMigrator().up(); // runs migrations
 
   const app = express();
@@ -24,16 +24,11 @@ const main = async () => {
   /* Using redis to store session data */
   const RedisStore = connectRedis(session);
 
-  const redisClient = redis.createClient({
-    socket: {
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT as string),
-    },
+  const redisClient = new ioredis({
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT as string),
     password: process.env.REDIS_PASSWORD,
-    legacyMode: true,
   });
-
-  await redisClient.connect();
 
   // apply cors throughout the app
   app.use(
