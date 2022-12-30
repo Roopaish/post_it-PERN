@@ -12,6 +12,7 @@ import { v4 } from "uuid";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
+import { createEmailTemplate } from "../utils/createEmailTemplate";
 import { sendEmail } from "../utils/sendEmail";
 import { validateRegister } from "../utils/validateRegister";
 import { AuthInput } from "./AuthInput";
@@ -155,7 +156,7 @@ export class UserResolver {
 
     sendEmail(
       email,
-      `<a href='http://localhost:3000/change-password/${token}'>Reset Your Password</a>`
+      createEmailTemplate(`http://localhost:3000/change-password/${token}`)
     );
     return true;
   }
