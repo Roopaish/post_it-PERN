@@ -52,6 +52,9 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
   return (
     <Box
       bg={colorMode === "light" ? "purple.400" : "blueviolet"}
+      position="sticky"
+      top="0"
+      zIndex="1000"
       p={4}
       ml="auto"
     >

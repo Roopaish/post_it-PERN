@@ -6,7 +6,6 @@ export const dataSource = new DataSource({
   username: process.env.POSTGRES_USER,
   logging: true,
   synchronize: true,
-  migrationsRun: false,
   entities: ["dist/entities/*.js"],
   migrations: ["dist/migrations/*.js"],
 });

@@ -1,4 +1,4 @@
-fragment RegularUser on Users {
+fragment RegularUser on UserAccount {
   id
   username
 }

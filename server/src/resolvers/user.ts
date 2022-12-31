@@ -10,7 +10,7 @@ import {
 } from "type-graphql";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
-import { Users } from "../entities/User";
+import { UserAccount } from "../entities/User";
 import { MyContext } from "../types";
 import { createEmailTemplate } from "../utils/createEmailTemplate";
 import { sendEmail } from "../utils/sendEmail";
@@ -31,8 +31,8 @@ class UserResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
 
-  @Field(() => Users, { nullable: true })
-  user?: Users;
+  @Field(() => UserAccount, { nullable: true })
+  user?: UserAccount;
 }
 
 @Resolver()
@@ -50,7 +50,7 @@ export class UserResolver {
 
     const hashedPassword = await argon2.hash(input.password);
 
-    let user: Users;
+    let user: UserAccount;
 
     try {
       // const result = await dataSource
@@ -67,7 +67,7 @@ export class UserResolver {
 
       // user = result.raw[0];
 
-      user = await Users.create({
+      user = await UserAccount.create({
         username: input.username,
         email: input.email,
         password: hashedPassword,
@@ -104,7 +104,7 @@ export class UserResolver {
       usernameOrEmail
     );
 
-    const user = await Users.findOneBy(
+    const user = await UserAccount.findOneBy(
       isEmail ? { email: usernameOrEmail } : { username: usernameOrEmail }
     );
 
@@ -127,12 +127,12 @@ export class UserResolver {
     return { user };
   }
 
-  @Query(() => Users, { nullable: true })
+  @Query(() => UserAccount, { nullable: true })
   me(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {
       return null;
     }
-    return Users.findOneBy({ id: req.session.userId });
+    return UserAccount.findOneBy({ id: req.session.userId });
   }
 
   @Mutation(() => Boolean)
@@ -155,7 +155,7 @@ export class UserResolver {
     @Arg("email") email: string,
     @Ctx() { redis }: MyContext
   ) {
-    const user = await Users.findOneBy({ email });
+    const user = await UserAccount.findOneBy({ email });
     if (!user) {
       return true;
     }
@@ -205,7 +205,7 @@ export class UserResolver {
     }
 
     const userIdNum = parseInt(userId);
-    const user = await Users.findOneBy({ id: userIdNum });
+    const user = await UserAccount.findOneBy({ id: userIdNum });
     if (!user) {
       return {
         errors: [
@@ -217,7 +217,7 @@ export class UserResolver {
       };
     }
 
-    await Users.update(
+    await UserAccount.update(
       { id: userIdNum },
       { password: await argon2.hash(newPassword) }
     );
