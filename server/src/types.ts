@@ -1,9 +1,7 @@
-import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 import { Request, Response } from "express";
 import { Redis } from "ioredis";
 
 export type MyContext = {
-  em: EntityManager<IDatabaseDriver<Connection>>;
   req: Request;
   res: Response;
   redis: Redis;
@@ -12,6 +10,6 @@ export type MyContext = {
 // Global module to extend express-session type
 declare module "express-session" {
   interface Session {
-    userId: number | string;
+    userId: number;
   }
 }

@@ -1,4 +1,3 @@
-import { MikroORM } from "@mikro-orm/core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
@@ -7,17 +6,15 @@ import express from "express";
 import session from "express-session";
 import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
+import { dataSource } from "./config/dataSource";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import mikroOrmConfig from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 
 const main = async () => {
-  const orm = await MikroORM.init(mikroOrmConfig);
-  // await orm.em.nativeDelete(User, {}); // delete all users
-  await orm.getMigrator().up(); // runs migrations
+  await dataSource.initialize();
 
   const app = express();
 
@@ -65,7 +62,7 @@ const main = async () => {
       validate: false,
     }),
     // to make variables available to all the resolvers, can pass anything
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
   });
   await apolloServer.start();
 
