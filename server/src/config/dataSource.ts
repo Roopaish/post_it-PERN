@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+console.log(__dirname, "./migrations/*.js");
 export const dataSource = new DataSource({
   type: "postgres",
   database: process.env.POSTGRES_DB,

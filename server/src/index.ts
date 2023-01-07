@@ -16,6 +16,9 @@ import { MyContext } from "./types";
 const main = async () => {
   await dataSource.initialize();
 
+  await dataSource.runMigrations();
+  // await Post.delete({});
+
   const app = express();
 
   /* Using redis to store session data */
