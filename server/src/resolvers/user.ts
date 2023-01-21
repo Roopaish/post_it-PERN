@@ -8,7 +8,7 @@ import {
   ObjectType,
   Query,
   Resolver,
-  Root
+  Root,
 } from "type-graphql";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
@@ -37,7 +37,7 @@ class UserResponse {
   user?: UserAccount;
 }
 
-@Resolver()
+@Resolver(UserAccount)
 export class UserResolver {
   @FieldResolver(() => String)
   email(@Root() user: UserAccount, @Ctx() { req }: MyContext) {

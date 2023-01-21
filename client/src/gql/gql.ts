@@ -13,8 +13,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel-plugin for production.
  */
 const documents = {
+    "fragment PostSnippet on Post {\n  id\n  title\n  creatorId\n  creator {\n    ...RegularUser\n  }\n  text\n  points\n  createdAt\n  updatedAt\n  textSnippet\n  voteStatus\n}": types.PostSnippetFragmentDoc,
     "fragment RegularError on FieldError {\n  field\n  message\n}": types.RegularErrorFragmentDoc,
-    "fragment RegularUser on UserAccount {\n  id\n  username\n}": types.RegularUserFragmentDoc,
+    "fragment RegularUser on UserAccount {\n  id\n  username\n  email\n}": types.RegularUserFragmentDoc,
     "fragment RegularUserResponse on UserResponse {\n  errors {\n    ...RegularError\n  }\n  user {\n    ...RegularUser\n  }\n}": types.RegularUserResponseFragmentDoc,
     "mutation ChangePassword($newPassword: String!, $token: String!) {\n  changePassword(newPassword: $newPassword, token: $token) {\n    ...RegularUserResponse\n  }\n}": types.ChangePasswordDocument,
     "mutation CreatePost($input: PostInput!) {\n  createPost(input: $input) {\n    creatorId\n    id\n    points\n    text\n    title\n    createdAt\n  }\n}": types.CreatePostDocument,
@@ -22,10 +23,15 @@ const documents = {
     "mutation Login($usernameOrEmail: String!, $password: String!) {\n  login(usernameOrEmail: $usernameOrEmail, password: $password) {\n    ...RegularUserResponse\n  }\n}": types.LoginDocument,
     "mutation Logout {\n  logout\n}": types.LogoutDocument,
     "mutation Register($input: AuthInput!) {\n  register(input: $input) {\n    ...RegularUserResponse\n  }\n}": types.RegisterDocument,
+    "mutation Vote($value: Int!, $postId: Int!) {\n  vote(value: $value, postId: $postId)\n}": types.VoteDocument,
     "query Me {\n  me {\n    ...RegularUser\n  }\n}": types.MeDocument,
-    "query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    posts {\n      id\n      createdAt\n      textSnippet\n      title\n      updatedAt\n      points\n      creatorId\n    }\n    hasMore\n  }\n}": types.PostsDocument,
+    "query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    hasMore\n    posts {\n      ...PostSnippet\n    }\n  }\n}": types.PostsDocument,
 };
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "fragment PostSnippet on Post {\n  id\n  title\n  creatorId\n  creator {\n    ...RegularUser\n  }\n  text\n  points\n  createdAt\n  updatedAt\n  textSnippet\n  voteStatus\n}"): (typeof documents)["fragment PostSnippet on Post {\n  id\n  title\n  creatorId\n  creator {\n    ...RegularUser\n  }\n  text\n  points\n  createdAt\n  updatedAt\n  textSnippet\n  voteStatus\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -33,7 +39,7 @@ export function graphql(source: "fragment RegularError on FieldError {\n  field\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "fragment RegularUser on UserAccount {\n  id\n  username\n}"): (typeof documents)["fragment RegularUser on UserAccount {\n  id\n  username\n}"];
+export function graphql(source: "fragment RegularUser on UserAccount {\n  id\n  username\n  email\n}"): (typeof documents)["fragment RegularUser on UserAccount {\n  id\n  username\n  email\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -65,11 +71,15 @@ export function graphql(source: "mutation Register($input: AuthInput!) {\n  regi
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "mutation Vote($value: Int!, $postId: Int!) {\n  vote(value: $value, postId: $postId)\n}"): (typeof documents)["mutation Vote($value: Int!, $postId: Int!) {\n  vote(value: $value, postId: $postId)\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "query Me {\n  me {\n    ...RegularUser\n  }\n}"): (typeof documents)["query Me {\n  me {\n    ...RegularUser\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    posts {\n      id\n      createdAt\n      textSnippet\n      title\n      updatedAt\n      points\n      creatorId\n    }\n    hasMore\n  }\n}"): (typeof documents)["query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    posts {\n      id\n      createdAt\n      textSnippet\n      title\n      updatedAt\n      points\n      creatorId\n    }\n    hasMore\n  }\n}"];
+export function graphql(source: "query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    hasMore\n    posts {\n      ...PostSnippet\n    }\n  }\n}"): (typeof documents)["query Posts($limit: Float!, $cursor: String) {\n  posts(limit: $limit, cursor: $cursor) {\n    hasMore\n    posts {\n      ...PostSnippet\n    }\n  }\n}"];
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.

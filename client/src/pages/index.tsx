@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "urql";
 import Layout from "../components/Layout";
+import Updoot from "../components/Updoot";
 import { PostsDocument } from "../gql/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 
@@ -34,10 +35,21 @@ const Index = () => {
             <Stack spacing={8}>
               {data!.posts.posts.map((post) => {
                 return (
-                  <Box key={post.id} borderWidth="1px" shadow="md" p={5}>
-                    <Heading size="md">{post.title}</Heading>
-                    <Text>{post.textSnippet}</Text>
-                  </Box>
+                  <Flex
+                    key={post.id}
+                    borderWidth="1px"
+                    shadow="md"
+                    p={5}
+                    alignItems="center"
+                  >
+                    <Updoot post={post} />
+                    <Box>
+                      <Heading size="md">{post.title}</Heading>
+                      <Heading size="md">{post.title}</Heading>
+                      post by {post.creator.username}
+                      <Text>{post.textSnippet}</Text>
+                    </Box>
+                  </Flex>
                 );
               })}
             </Stack>
