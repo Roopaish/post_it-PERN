@@ -10,5 +10,8 @@ query Posts($limit: Float!, $cursor: String) {
       creatorId
     }
     hasMore
+    user {
+      ...RegularUser
+    }
   }
 }
