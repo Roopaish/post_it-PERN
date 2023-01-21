@@ -4,7 +4,6 @@ import React, { ReactElement, useEffect, useState } from "react";
 import NextLink from "next/link";
 import { useMutation, useQuery } from "urql";
 import { LogoutDocument, MeDocument } from "../gql/graphql";
-import { isServer } from "../utils/isServer";
 
 interface NavBarProps {}
 
@@ -13,7 +12,6 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
 
   const [{ data, fetching }] = useQuery({
     query: MeDocument,
-    pause: isServer(),
   });
   const [{ fetching: logoutFetching }, logout] = useMutation(LogoutDocument);
 
