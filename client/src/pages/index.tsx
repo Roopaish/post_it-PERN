@@ -1,24 +1,15 @@
-import { DeleteIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  IconButton,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
 import Link from "next/link";
 import { useState } from "react";
-import { useMutation, useQuery } from "urql";
+import { useQuery } from "urql";
 import Layout from "../components/Layout";
+import PostButtons from "../components/PostButtons";
 import Updoot from "../components/Updoot";
-import { DeletePostDocument, MeDocument, PostsDocument } from "../gql/graphql";
+import { PostsDocument } from "../gql/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
-  const [{ data: user }] = useQuery({ query: MeDocument });
   const [variables, setVariables] = useState({
     limit: 10,
     cursor: null as null | string,
@@ -27,8 +18,6 @@ const Index = () => {
     query: PostsDocument,
     variables,
   });
-
-  const [, deletePost] = useMutation(DeletePostDocument);
 
   return (
     <Layout>
@@ -64,16 +53,8 @@ const Index = () => {
                         alignItems="center"
                         w="full"
                       >
-                        <Text>{post.textSnippet}</Text>
-                        {user?.me && user?.me.id === post.creatorId && (
-                          <IconButton
-                            aria-label="delete"
-                            bgColor="red.600"
-                            onClick={() => deletePost({ id: post.id })}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        )}
+                        <Text mr={2}>{post.textSnippet}</Text>
+                        <PostButtons id={post.id} creatorId={post.creatorId} />
                       </Flex>
                     </Box>
                   </Flex>

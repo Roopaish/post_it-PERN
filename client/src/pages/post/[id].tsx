@@ -1,18 +1,17 @@
-import { Heading } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
-import { useRouter } from "next/router";
 import type { FC } from "react";
 import { useQuery } from "urql";
 import Layout from "../../components/Layout";
+import PostButtons from "../../components/PostButtons";
 import { PostDocument } from "../../gql/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
+import { useGetIntId } from "../../utils/useGetIntId";
 
 interface PostProps {}
 
 const Post: FC<PostProps> = () => {
-  const router = useRouter();
-  const intId =
-    typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
+  const intId = useGetIntId();
   const [{ data, fetching }] = useQuery({
     query: PostDocument,
     pause: intId === -1,
@@ -36,6 +35,9 @@ const Post: FC<PostProps> = () => {
     <Layout>
       <Heading mb={4}>{data.post.title}</Heading>
       {data.post.text}
+      <Box mt={4}>
+        <PostButtons id={data.post.id} creatorId={data.post.creatorId} />
+      </Box>
     </Layout>
   );
 };

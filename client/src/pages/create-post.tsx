@@ -22,7 +22,7 @@ const CreatePost: React.FC<{}> = ({}) => {
         onSubmit={async (values) => {
           const { error } = await createPost({ input: values });
           if (!error) {
-            router.push("/");
+            router.back();
           }
         }}
       >
@@ -39,6 +39,7 @@ const CreatePost: React.FC<{}> = ({}) => {
                 label="Body"
                 placeholder="Body"
                 name="text"
+                style={{ height: 200 }}
               />
             </Box>
             <Button
