@@ -1,9 +1,10 @@
-import { Box, Button, Flex, useColorMode } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, useColorMode } from "@chakra-ui/react";
 import React, { ReactElement, useEffect, useState } from "react";
 
 import NextLink from "next/link";
 import { useMutation, useQuery } from "urql";
 import { LogoutDocument, MeDocument } from "../gql/graphql";
+import { isServer } from "../utils/isServer";
 
 interface NavBarProps {}
 
@@ -12,6 +13,7 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
 
   const [{ data, fetching }] = useQuery({
     query: MeDocument,
+    pause: isServer(),
   });
   const [{ fetching: logoutFetching }, logout] = useMutation(LogoutDocument);
 
@@ -33,6 +35,9 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
     } else {
       setBody(
         <Flex justifyContent="flex-end" align="center">
+          <Button mr={4}>
+            <NextLink href="/create-post">Create Post</NextLink>
+          </Button>
           <Box mr={2}>{data?.me?.username}</Box>
           <Button
             isLoading={logoutFetching}
@@ -48,7 +53,7 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
   }, [fetching, data]);
 
   return (
-    <Box
+    <Flex
       bg={colorMode === "light" ? "purple.400" : "blueviolet"}
       position="sticky"
       top="0"
@@ -56,10 +61,21 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
       p={4}
       ml="auto"
     >
-      <Box ml="auto" textAlign="right">
-        {body}
-      </Box>
-    </Box>
+      <Flex
+        flex={1}
+        maxW={800}
+        mx="auto"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <NextLink href="/">
+          <Heading>Post-it</Heading>
+        </NextLink>
+        <Box ml="auto" textAlign="right">
+          {body}
+        </Box>
+      </Flex>
+    </Flex>
   );
 };
 

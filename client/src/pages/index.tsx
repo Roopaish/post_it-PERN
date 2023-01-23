@@ -1,14 +1,24 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
 import Link from "next/link";
 import { useState } from "react";
-import { useQuery } from "urql";
+import { useMutation, useQuery } from "urql";
 import Layout from "../components/Layout";
 import Updoot from "../components/Updoot";
-import { PostsDocument } from "../gql/graphql";
+import { DeletePostDocument, MeDocument, PostsDocument } from "../gql/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
+  const [{ data: user }] = useQuery({ query: MeDocument });
   const [variables, setVariables] = useState({
     limit: 10,
     cursor: null as null | string,
@@ -18,11 +28,12 @@ const Index = () => {
     variables,
   });
 
+  const [, deletePost] = useMutation(DeletePostDocument);
+
   return (
     <Layout>
       <Flex justifyContent="space-between" alignItems="center">
-        <Heading>Post It</Heading>
-        <Link href="/create-post">Create Post</Link>
+        <Heading fontSize={20}>New Posts</Heading>
       </Flex>
       <br />
       {!fetching && !data ? (
@@ -34,7 +45,7 @@ const Index = () => {
           ) : (
             <Stack spacing={8}>
               {data!.posts.posts.map((post) => {
-                return (
+                return !post ? null : (
                   <Flex
                     key={post.id}
                     borderWidth="1px"
@@ -43,11 +54,27 @@ const Index = () => {
                     alignItems="center"
                   >
                     <Updoot post={post} />
-                    <Box>
-                      <Heading size="md">{post.title}</Heading>
-                      <Heading size="md">{post.title}</Heading>
+                    <Box flex={1}>
+                      <Heading size="md">
+                        <Link href={`/post/${post.id}`}>{post.title}</Link>
+                      </Heading>
                       post by {post.creator.username}
-                      <Text>{post.textSnippet}</Text>
+                      <Flex
+                        justifyContent="space-between"
+                        alignItems="center"
+                        w="full"
+                      >
+                        <Text>{post.textSnippet}</Text>
+                        {user?.me && user?.me.id === post.creatorId && (
+                          <IconButton
+                            aria-label="delete"
+                            bgColor="red.600"
+                            onClick={() => deletePost({ id: post.id })}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                      </Flex>
                     </Box>
                   </Flex>
                 );
