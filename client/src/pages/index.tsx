@@ -14,7 +14,7 @@ const Index = () => {
     limit: 10,
     cursor: null as null | string,
   });
-  const [{ data, fetching }] = useQuery({
+  const [{ data, error, fetching }] = useQuery({
     query: PostsDocument,
     variables,
   });
@@ -26,7 +26,7 @@ const Index = () => {
       </Flex>
       <br />
       {!fetching && !data ? (
-        <div>you got not data some reason</div>
+        <div>{error?.message}</div>
       ) : (
         <>
           {!data && fetching ? (
