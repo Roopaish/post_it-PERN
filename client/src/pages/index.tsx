@@ -54,7 +54,12 @@ const Index = () => {
                         w="full"
                       >
                         <Text mr={2}>{post.textSnippet}</Text>
-                        <PostButtons id={post.id} creatorId={post.creatorId} />
+                        <div>
+                          <PostButtons
+                            id={post.id}
+                            creatorId={post.creatorId}
+                          />
+                        </div>
                       </Flex>
                     </Box>
                   </Flex>

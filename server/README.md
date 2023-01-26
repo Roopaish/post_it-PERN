@@ -5,6 +5,9 @@
 - `nodemon dist/index.js` to re-run app on changes
 - `npx mikro-orm migration:create` to create new migrations from cli
 - `npx typeorm migration:create ./src/migrations` to create new migrations from cli
+- `docker build -t roopaish/post-it:test .` to build docker image
+- `npx gen-env-types .env -o src/env.d.ts -e .` generate env types
+- `typeorm migration:generate ./  -d ./dist/config/dataSource.js` to create new migrations from cli
 
 ## Packages
 

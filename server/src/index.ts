@@ -36,7 +36,7 @@ const main = async () => {
   app.use(
     cors({
       credentials: true,
-      origin: ["https://studio.apollographql.com", "http://localhost:3000"],
+      origin: process.env.CORS_ORIGIN,
     })
   );
 
@@ -54,6 +54,7 @@ const main = async () => {
         httpOnly: true, // can't be accessed by client side js
         sameSite: "lax", // csrf
         secure: __prod__, // cookie only works in https if true, true for https and false for http
+        domain: __prod__ ? ".some.com" : undefined,
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET as string,
@@ -86,7 +87,7 @@ const main = async () => {
     // }, // cors for this endpoint only
   }); // creates graphql endpoint on express
 
-  app.listen(process.env.PORT || 4000, () => {
+  app.listen(parseInt(process.env.PORT || "4000"), () => {
     console.log("Server is running on port: ", process.env.PORT || 4000);
   });
 };
