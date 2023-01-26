@@ -2,6 +2,7 @@ import { Box, Button, Flex, Heading, useColorMode } from "@chakra-ui/react";
 import React, { ReactElement, useEffect, useState } from "react";
 
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { useMutation, useQuery } from "urql";
 import { LogoutDocument, MeDocument } from "../gql/graphql";
 import { isServer } from "../utils/isServer";
@@ -9,6 +10,7 @@ import { isServer } from "../utils/isServer";
 interface NavBarProps {}
 
 const NavBar: React.FC<NavBarProps> = ({}) => {
+  const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
 
   const [{ data, fetching }] = useQuery({
@@ -41,8 +43,9 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
           <Box mr={2}>{data?.me?.username}</Box>
           <Button
             isLoading={logoutFetching}
-            onClick={() => {
-              logout({});
+            onClick={async () => {
+              await logout({});
+              router.reload();
             }}
           >
             Logout

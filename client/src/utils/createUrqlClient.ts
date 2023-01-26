@@ -1,4 +1,4 @@
-import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
+import { Cache, cacheExchange, Resolver } from "@urql/exchange-graphcache";
 import Router from "next/router";
 import {
   dedupExchange,
@@ -72,6 +72,20 @@ const errorExchange: Exchange =
     );
   };
 
+const invalidateAllPosts = (cache: Cache) => {
+  // To invalidate posts when not paginated
+  //  cache.invalidate("Query", "posts", {
+  //     limit: 10, // refetching posts on createPost with initial params
+  //   })
+
+  // To invalidate whole pagination
+  const allFields = cache.inspectFields("Query");
+  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+  fieldInfos.forEach((fi) =>
+    cache.invalidate("Query", "posts", fi.arguments || {})
+  );
+};
+
 export const createUrqlClient = (ssrExchange: any, ctx: any) => {
   let cookie = "";
   if (isServer()) {
@@ -131,6 +145,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                   }
                 }
               );
+              invalidateAllPosts(cache);
             },
             logout: (_result: LogoutMutation, args, cache, info) => {
               betterUpdateQuery<LogoutMutation, MeQuery>(
@@ -141,20 +156,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
               );
             },
             createPost: (_result, args, cache, info) => {
-              // To invalidate posts when not paginated
-              //  cache.invalidate("Query", "posts", {
-              //     limit: 10, // refetching posts on createPost with initial params
-              //   })
-
-              // To invalidate whole pagination
-              const allFields = cache.inspectFields("Query");
-              console.log(allFields);
-              const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "posts"
-              );
-              fieldInfos.forEach((fi) =>
-                cache.invalidate("Query", "posts", fi.arguments || {})
-              );
+              invalidateAllPosts(cache);
             },
             vote: (_result, args: VoteMutationVariables, cache, info) => {
               const { postId, value } = args;

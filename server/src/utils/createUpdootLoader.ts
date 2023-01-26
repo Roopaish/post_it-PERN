@@ -7,7 +7,10 @@ import { Updoot } from "../entities/Updoot";
 export const createUpdootLoader = () =>
   new DataLoader<{ postId: number; userId: number }, Updoot | null>(
     async (keys) => {
-      const updoots = await Updoot.findBy(In(keys));
+      const updoots = await Updoot.findBy({
+        postId: In(keys.map((key) => key.postId)),
+        userId: In(keys.map((key) => key.userId)),
+      });
       const updootIdsToUpdoot: Record<string, Updoot> = {};
       updoots.forEach(
         (u) => (updootIdsToUpdoot[`${u.userId}|${u.postId}`] = u)
