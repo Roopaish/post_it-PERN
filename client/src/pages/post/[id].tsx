@@ -1,14 +1,12 @@
 import { useQuery } from "@apollo/client";
 import { Box, Heading } from "@chakra-ui/react";
-import type { FC } from "react";
 import Layout from "../../components/Layout";
 import PostButtons from "../../components/PostButtons";
 import { PostDocument } from "../../gql/graphql";
 import { useGetIntId } from "../../utils/useGetIntId";
+import { withApollo } from "../../utils/withApollo";
 
-interface PostProps {}
-
-const Post: FC<PostProps> = () => {
+const Post = () => {
   const intId = useGetIntId();
   const { data, loading: fetching } = useQuery(PostDocument, {
     variables: {
@@ -38,4 +36,4 @@ const Post: FC<PostProps> = () => {
   );
 };
 
-export default Post;
+export default withApollo({ ssr: true })(Post);

@@ -6,8 +6,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
-import { ChangePasswordDocument } from "../../gql/graphql";
+import { ChangePasswordDocument, MeDocument, MeQuery } from "../../gql/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
+import { withApollo } from "../../utils/withApollo";
 
 const ChangePassword = () => {
   const [changePassword] = useMutation(ChangePasswordDocument);
@@ -27,6 +28,15 @@ const ChangePassword = () => {
                 typeof router.query.token === "string"
                   ? router.query.token
                   : "",
+            },
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.changePassword.user,
+                },
+              });
             },
           });
 
@@ -74,4 +84,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default withApollo()(ChangePassword);

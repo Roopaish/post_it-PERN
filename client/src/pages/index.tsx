@@ -5,6 +5,7 @@ import Layout from "../components/Layout";
 import PostButtons from "../components/PostButtons";
 import Updoot from "../components/Updoot";
 import { PostsDocument } from "../gql/graphql";
+import { withApollo } from "../utils/withApollo";
 
 const Index = () => {
   const {
@@ -117,4 +118,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default withApollo({ ssr: true })(Index);

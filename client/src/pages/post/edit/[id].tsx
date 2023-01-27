@@ -3,16 +3,14 @@ import { useMutation } from "@apollo/client/react";
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import type { FC } from "react";
 import InputField from "../../../components/InputField";
 import Layout from "../../../components/Layout";
 import { PostDocument, UpdatePostDocument } from "../../../gql/graphql";
 import { useGetIntId } from "../../../utils/useGetIntId";
 import { useIsAuth } from "../../../utils/useIsAuth";
+import { withApollo } from "../../../utils/withApollo";
 
-interface EditPostProps {}
-
-const EditPost: FC<EditPostProps> = () => {
+const EditPost = () => {
   const router = useRouter();
   const intId = useGetIntId();
   useIsAuth();
@@ -83,4 +81,4 @@ const EditPost: FC<EditPostProps> = () => {
   );
 };
 
-export default EditPost;
+export default withApollo()(EditPost);

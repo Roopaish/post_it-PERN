@@ -2,13 +2,13 @@ import { useMutation } from "@apollo/client/react";
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React from "react";
 import InputField from "../components/InputField";
 import Layout from "../components/Layout";
 import { CreatePostDocument } from "../gql/graphql";
 import { useIsAuth } from "../utils/useIsAuth";
+import { withApollo } from "../utils/withApollo";
 
-const CreatePost: React.FC<{}> = ({}) => {
+const CreatePost = () => {
   const router = useRouter();
   useIsAuth();
   const [createPost] = useMutation(CreatePostDocument);
@@ -18,7 +18,12 @@ const CreatePost: React.FC<{}> = ({}) => {
       <Formik
         initialValues={{ title: "", text: "" }}
         onSubmit={async (values) => {
-          const { errors } = await createPost({ variables: { input: values } });
+          const { errors } = await createPost({
+            variables: { input: values },
+            update: (cache) => {
+              cache.evict({ fieldName: "posts:{}" });
+            },
+          });
           if (!errors) {
             router.back();
           }
@@ -55,4 +60,4 @@ const CreatePost: React.FC<{}> = ({}) => {
   );
 };
 
-export default CreatePost;
+export default withApollo()(CreatePost);

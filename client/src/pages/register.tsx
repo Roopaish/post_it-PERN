@@ -2,15 +2,13 @@ import { useMutation } from "@apollo/client/react";
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
-import { RegisterDocument } from "../gql/graphql";
+import { MeDocument, MeQuery, RegisterDocument } from "../gql/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
+import { withApollo } from "../utils/withApollo";
 
-interface RegisterPageProps {}
-
-const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
+const RegisterPage = () => {
   const router = useRouter();
   const [register] = useMutation(RegisterDocument);
   return (
@@ -22,7 +20,18 @@ const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
           password: "",
         }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register({ variables: { input: values } });
+          const response = await register({
+            variables: { input: values },
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.register.user,
+                },
+              });
+            },
+          });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -70,4 +79,4 @@ const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
   );
 };
 
-export default RegisterPage;
+export default withApollo()(RegisterPage);

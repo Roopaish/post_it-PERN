@@ -3,15 +3,13 @@ import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
-import { LoginDocument } from "../gql/graphql";
+import { LoginDocument, MeDocument, MeQuery } from "../gql/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
+import { withApollo } from "../utils/withApollo";
 
-interface LoginPageProps {}
-
-const LoginPage: React.FC<LoginPageProps> = ({}) => {
+const LoginPage = () => {
   const router = useRouter();
   const [login] = useMutation(LoginDocument);
   return (
@@ -22,7 +20,18 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
           password: "",
         }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ variables: values });
+          const response = await login({
+            variables: values,
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data?.login.user,
+                },
+              });
+            },
+          });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -69,4 +78,4 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
   );
 };
 
-export default LoginPage;
+export default withApollo()(LoginPage);

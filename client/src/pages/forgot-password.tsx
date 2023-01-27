@@ -5,6 +5,7 @@ import { useState } from "react";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { ForgotPasswordDocument } from "../gql/graphql";
+import { withApollo } from "../utils/withApollo";
 
 const ForgotPassword = () => {
   const [forgotPassword] = useMutation(ForgotPasswordDocument);
@@ -46,4 +47,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default withApollo()(ForgotPassword);
