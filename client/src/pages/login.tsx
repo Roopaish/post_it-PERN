@@ -1,21 +1,19 @@
+import { useMutation } from "@apollo/client/react";
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { useMutation } from "urql";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { LoginDocument } from "../gql/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface LoginPageProps {}
 
 const LoginPage: React.FC<LoginPageProps> = ({}) => {
   const router = useRouter();
-  const [, login] = useMutation(LoginDocument);
+  const [login] = useMutation(LoginDocument);
   return (
     <Wrapper variant="small">
       <Formik
@@ -24,7 +22,7 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
           password: "",
         }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login(values);
+          const response = await login({ variables: values });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -71,4 +69,4 @@ const LoginPage: React.FC<LoginPageProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(LoginPage);
+export default LoginPage;

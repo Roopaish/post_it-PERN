@@ -1,22 +1,24 @@
+import { useQuery } from "@apollo/client";
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { withUrqlClient } from "next-urql";
 import Link from "next/link";
-import { useState } from "react";
-import { useQuery } from "urql";
 import Layout from "../components/Layout";
 import PostButtons from "../components/PostButtons";
 import Updoot from "../components/Updoot";
 import { PostsDocument } from "../gql/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
-  const [variables, setVariables] = useState({
-    limit: 10,
-    cursor: null as null | string,
-  });
-  const [{ data, error, fetching }] = useQuery({
-    query: PostsDocument,
+  const {
+    loading: fetching,
+    error,
+    data,
+    fetchMore,
     variables,
+  } = useQuery(PostsDocument, {
+    variables: {
+      limit: 10,
+      cursor: null as null | string,
+    },
+    notifyOnNetworkStatusChange: true,
   });
 
   return (
@@ -71,10 +73,34 @@ const Index = () => {
             <Flex>
               <Button
                 onClick={() => {
-                  setVariables({
-                    limit: variables.limit,
-                    cursor:
-                      data.posts.posts[data.posts.posts.length - 1].createdAt,
+                  fetchMore({
+                    variables: {
+                      limit: variables?.limit,
+                      cursor:
+                        data.posts.posts[data.posts.posts.length - 1].createdAt,
+                    },
+                    // use updateQuery or use typePolicies in memory cache to update the cache in client
+                    // updateQuery(
+                    //   previousValue,
+                    //   { fetchMoreResult }
+                    // ): PostsQuery {
+                    //   if (!fetchMoreResult) {
+                    //     return previousValue;
+                    //   }
+
+                    //   return {
+                    //     __typename: "Query",
+                    //     posts: {
+                    //       __typename: "PaginatedPosts",
+                    //       hasMore: (fetchMoreResult as PostsQuery).posts
+                    //         .hasMore,
+                    //       posts: [
+                    //         ...(previousValue as PostsQuery).posts.posts,
+                    //         ...(fetchMoreResult as PostsQuery).posts.posts,
+                    //       ],
+                    //     },
+                    //   };
+                    // },
                   });
                 }}
                 isLoading={fetching}
@@ -91,4 +117,4 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
+export default Index;

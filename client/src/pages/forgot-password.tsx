@@ -1,15 +1,13 @@
+import { useMutation } from "@apollo/client/react";
 import { Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
 import { useState } from "react";
-import { useMutation } from "urql";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { ForgotPasswordDocument } from "../gql/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 
 const ForgotPassword = () => {
-  const [, forgotPassword] = useMutation(ForgotPasswordDocument);
+  const [forgotPassword] = useMutation(ForgotPasswordDocument);
   const [complete, setComplete] = useState(false);
 
   return (
@@ -17,7 +15,7 @@ const ForgotPassword = () => {
       <Formik
         initialValues={{ email: "" }}
         onSubmit={async (values, { setErrors }) => {
-          await forgotPassword(values);
+          await forgotPassword({ variables: values });
           setComplete(true);
         }}
       >
@@ -48,4 +46,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(ForgotPassword);
+export default ForgotPassword;

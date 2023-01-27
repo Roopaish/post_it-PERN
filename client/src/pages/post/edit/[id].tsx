@@ -1,13 +1,12 @@
+import { useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { Box, Button, Heading } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import type { FC } from "react";
-import { useMutation, useQuery } from "urql";
 import InputField from "../../../components/InputField";
 import Layout from "../../../components/Layout";
 import { PostDocument, UpdatePostDocument } from "../../../gql/graphql";
-import { createUrqlClient } from "../../../utils/createUrqlClient";
 import { useGetIntId } from "../../../utils/useGetIntId";
 import { useIsAuth } from "../../../utils/useIsAuth";
 
@@ -17,15 +16,14 @@ const EditPost: FC<EditPostProps> = () => {
   const router = useRouter();
   const intId = useGetIntId();
   useIsAuth();
-  const [{ data, fetching }] = useQuery({
-    query: PostDocument,
-    pause: intId === -1,
+  const { data, loading: fetching } = useQuery(PostDocument, {
+    skip: intId === -1,
     variables: {
       id: intId,
     },
   });
 
-  const [, updatePost] = useMutation(UpdatePostDocument);
+  const [updatePost] = useMutation(UpdatePostDocument);
 
   if (fetching) {
     return <Layout>loading...</Layout>;
@@ -46,8 +44,10 @@ const EditPost: FC<EditPostProps> = () => {
           text: data?.post?.text ?? "",
         }}
         onSubmit={async (values) => {
-          const { error } = await updatePost({ id: intId, ...values });
-          if (!error) {
+          const { errors } = await updatePost({
+            variables: { id: intId, ...values },
+          });
+          if (!errors) {
             router.push("/");
           }
         }}
@@ -83,4 +83,4 @@ const EditPost: FC<EditPostProps> = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(EditPost);
+export default EditPost;

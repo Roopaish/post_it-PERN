@@ -1,20 +1,18 @@
+import { useMutation } from "@apollo/client/react";
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
-import { useMutation } from "urql";
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { RegisterDocument } from "../gql/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface RegisterPageProps {}
 
 const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
   const router = useRouter();
-  const [, register] = useMutation(RegisterDocument);
+  const [register] = useMutation(RegisterDocument);
   return (
     <Wrapper variant="small">
       <Formik
@@ -24,7 +22,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
           password: "",
         }}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register({ input: values });
+          const response = await register({ variables: { input: values } });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -72,4 +70,4 @@ const RegisterPage: React.FC<RegisterPageProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(RegisterPage);
+export default RegisterPage;

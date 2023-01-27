@@ -1,20 +1,16 @@
+import { useQuery } from "@apollo/client";
 import { Box, Heading } from "@chakra-ui/react";
-import { withUrqlClient } from "next-urql";
 import type { FC } from "react";
-import { useQuery } from "urql";
 import Layout from "../../components/Layout";
 import PostButtons from "../../components/PostButtons";
 import { PostDocument } from "../../gql/graphql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
 import { useGetIntId } from "../../utils/useGetIntId";
 
 interface PostProps {}
 
 const Post: FC<PostProps> = () => {
   const intId = useGetIntId();
-  const [{ data, fetching }] = useQuery({
-    query: PostDocument,
-    pause: intId === -1,
+  const { data, loading: fetching } = useQuery(PostDocument, {
     variables: {
       id: intId,
     },
@@ -42,4 +38,4 @@ const Post: FC<PostProps> = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default Post;

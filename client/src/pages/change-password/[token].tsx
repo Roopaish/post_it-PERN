@@ -1,18 +1,16 @@
+import { useMutation } from "@apollo/client/react";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useMutation } from "urql";
 import InputField from "../../components/InputField";
 import Wrapper from "../../components/Wrapper";
 import { ChangePasswordDocument } from "../../gql/graphql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
 import { toErrorMap } from "../../utils/toErrorMap";
 
 const ChangePassword = () => {
-  const [, changePassword] = useMutation(ChangePasswordDocument);
+  const [changePassword] = useMutation(ChangePasswordDocument);
   const [tokenErr, setTokenErr] = useState("");
 
   const router = useRouter();
@@ -23,9 +21,13 @@ const ChangePassword = () => {
         initialValues={{ newPassword: "" }}
         onSubmit={async (values, { setErrors }) => {
           const response = await changePassword({
-            newPassword: values.newPassword,
-            token:
-              typeof router.query.token === "string" ? router.query.token : "",
+            variables: {
+              newPassword: values.newPassword,
+              token:
+                typeof router.query.token === "string"
+                  ? router.query.token
+                  : "",
+            },
           });
 
           if (response.data?.changePassword.errors) {
@@ -72,4 +74,4 @@ const ChangePassword = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(ChangePassword);
+export default ChangePassword;
