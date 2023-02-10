@@ -22,9 +22,8 @@
 ### /server
 
 - Install Docker
-- Install Docker Compose
-- Run `docker-compose up -d` to start the containers
-- Run `yarn watch` to start the server
+- Run `docker-compose up -d` to start the containers for postresql and redis
+- Run `yarn watch` to watch any changes in server files
 - Run `yarn dev` to start the server in development mode
 
 ### /client
